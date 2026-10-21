@@ -2,6 +2,7 @@ package com.policyhub.quote;
 
 import java.math.BigDecimal;
 
+import com.policyhub.common.PlateNumbers;
 import com.policyhub.premium.ProductType;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -14,7 +15,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateQuoteRequest(
         @NotNull ProductType productType,
-        @NotBlank @Pattern(regexp = "^(0[1-9]|[1-7][0-9]|8[01])\\s?[A-Z]{1,3}\\s?\\d{2,4}$",
+        @NotBlank @Pattern(regexp = PlateNumbers.REGEX, flags = Pattern.Flag.CASE_INSENSITIVE,
                 message = "must be a valid Turkish plate number, e.g. 34 ABC 123") String plateNumber,
         @Min(1980) int vehicleModelYear,
         @NotNull @DecimalMin("10000.00") BigDecimal vehicleValue,

@@ -25,6 +25,9 @@ services:
       DB_URL: jdbc:oracle:thin:@oracle:1521/FREEPDB1
       DB_USERNAME: policyhub
       DB_PASSWORD: policyhub
+      VEHICLE_INBOUND_DIR: /data/inbound
+    volumes:
+      - ./samples/mainframe:/data/inbound:ro   # mainframe extracts are dropped here
     ports:
       - "8080:8080"
 

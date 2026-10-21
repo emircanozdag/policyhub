@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.policyhub.common.BusinessRuleException;
 import com.policyhub.common.NotFoundException;
+import com.policyhub.common.PlateNumbers;
 import com.policyhub.common.ReferenceNumberGenerator;
 import com.policyhub.premium.PremiumCalculatorRegistry;
 import com.policyhub.premium.RiskProfile;
@@ -49,7 +50,7 @@ public class QuoteService {
         Quote quote = new Quote(
                 referenceNumbers.next("Q"),
                 request.productType(),
-                normalizePlate(request.plateNumber()),
+                PlateNumbers.normalize(request.plateNumber()),
                 request.vehicleModelYear(),
                 request.vehicleValue(),
                 request.driverAge(),
@@ -68,9 +69,5 @@ public class QuoteService {
     Quote findByNumber(String quoteNumber) {
         return quoteRepository.findByQuoteNumber(quoteNumber)
                 .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
-    }
-
-    private static String normalizePlate(String plate) {
-        return plate.replaceAll("\\s+", "").toUpperCase();
     }
 }

@@ -7,26 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.oracle.OracleContainer;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** End-to-end flow against a real Oracle database (Flyway migrations + JPA mappings). Requires Docker. */
-@SpringBootTest
-@AutoConfigureMockMvc
-@Testcontainers
-class QuoteToPolicyFlowIT {
-
-    @Container
-    @ServiceConnection
-    static OracleContainer oracle = new OracleContainer("gvenzl/oracle-free:23-slim-faststart");
+/** End-to-end quote to policy flow against a real Oracle database (Flyway migrations + JPA mappings). */
+class QuoteToPolicyFlowIT extends AbstractOracleIT {
 
     @Autowired
     private MockMvc mockMvc;

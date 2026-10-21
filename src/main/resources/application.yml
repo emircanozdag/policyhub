@@ -15,6 +15,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  batch:
+    job:
+      enabled: false          # jobs are launched by the scheduler or the batch API, never at startup
+    jdbc:
+      initialize-schema: never  # batch metadata tables are created by Flyway (V2)
 
 server:
   port: 8080
@@ -32,3 +37,14 @@ springdoc:
 policyhub:
   quote:
     validity-days: 15
+  batch:
+    vehicle-import:
+      inbound-dir: ${VEHICLE_INBOUND_DIR:./samples/mainframe}
+      encoding: UTF-8
+      chunk-size: 500
+      skip-limit: 100
+    lifecycle:
+      schedule-enabled: true
+      cron: "0 0 2 * * *"     # 02:00 Europe/Istanbul
+      renewal-window-days: 30
+      chunk-size: 100
