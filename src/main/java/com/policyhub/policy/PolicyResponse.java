@@ -13,10 +13,13 @@ public record PolicyResponse(
         String currency,
         LocalDate startDate,
         LocalDate endDate,
-        PolicyStatus status) {
+        PolicyStatus status,
+        String paymentReference) {
 
+    /** Amounts always carry two decimals, even when Oracle hands back {@code NUMBER(15,2)} as {@code 31250}. */
     static PolicyResponse from(Policy policy) {
         return new PolicyResponse(policy.getPolicyNumber(), policy.getProductType(), policy.getPlateNumber(),
-                policy.getPremium(), "TRY", policy.getStartDate(), policy.getEndDate(), policy.getStatus());
+                policy.getPremium().setScale(2), "TRY", policy.getStartDate(), policy.getEndDate(), policy.getStatus(),
+                policy.getPaymentReference());
     }
 }

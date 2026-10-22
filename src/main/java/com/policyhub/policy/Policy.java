@@ -53,12 +53,17 @@ public class Policy {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    /** Provider's payment id of the collected premium. */
+    @Column(length = 64)
+    private String paymentReference;
+
     protected Policy() {
         // for JPA
     }
 
     public Policy(String policyNumber, Long quoteId, ProductType productType, String plateNumber,
-                  BigDecimal premium, LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
+                  BigDecimal premium, LocalDate startDate, LocalDate endDate, String paymentReference,
+                  LocalDateTime createdAt) {
         this.policyNumber = policyNumber;
         this.quoteId = quoteId;
         this.productType = productType;
@@ -66,6 +71,7 @@ public class Policy {
         this.premium = premium;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.paymentReference = paymentReference;
         this.createdAt = createdAt;
         this.status = PolicyStatus.ACTIVE;
     }
@@ -115,5 +121,9 @@ public class Policy {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
     }
 }

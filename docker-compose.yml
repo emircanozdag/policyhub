@@ -16,16 +16,29 @@ services:
       retries: 30
       start_period: 30s
 
+  # Stand-in for the third parties (vehicle registry, payment gateway); stubs live in ./wiremock/mappings
+  third-parties:
+    image: wiremock/wiremock:3.13.2
+    command: ["--global-response-templating", "--disable-banner"]
+    volumes:
+      - ./wiremock:/home/wiremock:ro
+    ports:
+      - "8089:8080"
+
   app:
     build: .
     depends_on:
       oracle:
         condition: service_healthy
+      third-parties:
+        condition: service_started
     environment:
       DB_URL: jdbc:oracle:thin:@oracle:1521/FREEPDB1
       DB_USERNAME: policyhub
       DB_PASSWORD: policyhub
       VEHICLE_INBOUND_DIR: /data/inbound
+      VEHICLE_REGISTRY_BASE_URL: http://third-parties:8080
+      PAYMENT_GATEWAY_BASE_URL: http://third-parties:8080
     volumes:
       - ./samples/mainframe:/data/inbound:ro   # mainframe extracts are dropped here
     ports:

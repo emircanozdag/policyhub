@@ -33,7 +33,8 @@ class QuoteControllerTest {
     @Test
     void createsQuote() throws Exception {
         when(quoteService.createQuote(any())).thenReturn(new QuoteResponse("Q-20261021-000001", ProductType.KASKO,
-                "34ABC123", new BigDecimal("25000.00"), "TRY", QuoteStatus.ACTIVE, LocalDate.of(2026, 11, 5)));
+                "34ABC123", new BigDecimal("25000.00"), "TRY", QuoteStatus.ACTIVE, LocalDate.of(2026, 11, 5),
+                VehicleVerification.VERIFIED_ONLINE));
 
         mockMvc.perform(post("/api/v1/quotes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -44,7 +45,8 @@ class QuoteControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/quotes/Q-20261021-000001"))
                 .andExpect(jsonPath("$.premium").value(25000.00))
-                .andExpect(jsonPath("$.currency").value("TRY"));
+                .andExpect(jsonPath("$.currency").value("TRY"))
+                .andExpect(jsonPath("$.vehicleVerification").value("VERIFIED_ONLINE"));
     }
 
     @Test

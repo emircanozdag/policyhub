@@ -79,7 +79,7 @@ class PolicyLifecycleJobIT extends AbstractOracleIT {
         quote.convert(endDate.minusYears(1));
         quote = quoteRepository.save(quote);
         return policyRepository.save(new Policy("P-" + plate, quote.getId(), ProductType.KASKO, plate,
-                quote.getPremium(), endDate.minusYears(1), endDate, LocalDateTime.now()));
+                quote.getPremium(), endDate.minusYears(1), endDate, "PAY-" + plate, LocalDateTime.now()));
     }
 
     private static Quote quote(String plate, LocalDate validUntil) {

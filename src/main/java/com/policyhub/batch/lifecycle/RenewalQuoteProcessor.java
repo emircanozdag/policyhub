@@ -13,6 +13,7 @@ import com.policyhub.common.ReferenceNumberGenerator;
 import com.policyhub.premium.PremiumCalculatorRegistry;
 import com.policyhub.premium.RiskProfile;
 import com.policyhub.quote.Quote;
+import com.policyhub.quote.VehicleVerification;
 import com.policyhub.vehicle.VehicleStatus;
 
 /**
@@ -55,7 +56,7 @@ public class RenewalQuoteProcessor implements ItemProcessor<RenewalCandidate, Qu
                 candidate.claimCount());
         BigDecimal premium = calculators.forProduct(candidate.productType()).calculate(profile);
 
-        return Quote.renewalOf(
+        Quote renewal = Quote.renewalOf(
                 candidate.policyId(),
                 referenceNumbers.next("Q"),
                 candidate.productType(),
@@ -67,5 +68,9 @@ public class RenewalQuoteProcessor implements ItemProcessor<RenewalCandidate, Qu
                 premium,
                 candidate.endDate(),
                 LocalDateTime.now(clock));
+        renewal.recordVehicleVerification(candidate.vehicleStatus() != null
+                ? VehicleVerification.VERIFIED_OFFLINE
+                : VehicleVerification.UNVERIFIED);
+        return renewal;
     }
 }

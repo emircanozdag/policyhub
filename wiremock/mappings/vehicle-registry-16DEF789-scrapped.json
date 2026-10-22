@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/v1/vehicles/16DEF789"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "plateNumber": "16DEF789",
+      "chassisNumber": "ZFA31200000123456",
+      "brand": "FIAT",
+      "model": "EGEA 1.4 FIRE",
+      "modelYear": 2019,
+      "status": "SCRAPPED"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

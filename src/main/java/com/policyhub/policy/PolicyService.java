@@ -28,11 +28,18 @@ public class PolicyService {
         this.clock = clock;
     }
 
-    /** Issues a one-year policy starting today from an active, non-expired quote. */
+    /** Checks the quote can be issued today and returns it, so payment is only taken for issuable quotes. */
+    @Transactional(readOnly = true)
+    public Quote prepareIssuance(String quoteNumber) {
+        Quote quote = findQuote(quoteNumber);
+        quote.checkConvertible(LocalDate.now(clock));
+        return quote;
+    }
+
+    /** Issues a one-year policy starting today from an active, non-expired quote whose premium is paid. */
     @Transactional
-    public PolicyResponse issueFromQuote(String quoteNumber) {
-        Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
-                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+    public PolicyResponse issueFromQuote(String quoteNumber, String paymentReference) {
+        Quote quote = findQuote(quoteNumber);
         LocalDate today = LocalDate.now(clock);
         quote.convert(today);
 
@@ -44,6 +51,7 @@ public class PolicyService {
                 quote.getPremium(),
                 today,
                 today.plusYears(1),
+                paymentReference,
                 LocalDateTime.now(clock));
         return PolicyResponse.from(policyRepository.save(policy));
     }
@@ -58,6 +66,11 @@ public class PolicyService {
         Policy policy = findByNumber(policyNumber);
         policy.cancel();
         return PolicyResponse.from(policy);
+    }
+
+    private Quote findQuote(String quoteNumber) {
+        return quoteRepository.findByQuoteNumber(quoteNumber)
+                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
     }
 
     private Policy findByNumber(String policyNumber) {

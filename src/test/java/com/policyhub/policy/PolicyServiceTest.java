@@ -53,21 +53,29 @@ class PolicyServiceTest {
         when(quoteRepository.findByQuoteNumber("Q-1")).thenReturn(Optional.of(quote));
         when(policyRepository.save(any(Policy.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        PolicyResponse policy = policyService.issueFromQuote("Q-1");
+        PolicyResponse policy = policyService.issueFromQuote("Q-1", "PAY-1");
 
         assertThat(policy.status()).isEqualTo(PolicyStatus.ACTIVE);
         assertThat(policy.startDate()).isEqualTo(TODAY);
         assertThat(policy.endDate()).isEqualTo(TODAY.plusYears(1));
         assertThat(policy.premium()).isEqualByComparingTo("25000.00");
         assertThat(policy.policyNumber()).startsWith("P-20261021-");
+        assertThat(policy.paymentReference()).isEqualTo("PAY-1");
         assertThat(quote.getStatus()).isEqualTo(QuoteStatus.CONVERTED);
+    }
+
+    @Test
+    void prepareIssuanceRejectsExpiredQuoteBeforeAnyPayment() {
+        when(quoteRepository.findByQuoteNumber("Q-1")).thenReturn(Optional.of(quoteValidUntil(TODAY.minusDays(1))));
+
+        assertThatThrownBy(() -> policyService.prepareIssuance("Q-1")).isInstanceOf(BusinessRuleException.class);
     }
 
     @Test
     void rejectsExpiredQuote() {
         when(quoteRepository.findByQuoteNumber("Q-1")).thenReturn(Optional.of(quoteValidUntil(TODAY.minusDays(1))));
 
-        assertThatThrownBy(() -> policyService.issueFromQuote("Q-1"))
+        assertThatThrownBy(() -> policyService.issueFromQuote("Q-1", "PAY-1"))
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("expired");
         verify(policyRepository, never()).save(any());
@@ -79,7 +87,7 @@ class PolicyServiceTest {
         quote.convert(TODAY);
         when(quoteRepository.findByQuoteNumber("Q-1")).thenReturn(Optional.of(quote));
 
-        assertThatThrownBy(() -> policyService.issueFromQuote("Q-1"))
+        assertThatThrownBy(() -> policyService.issueFromQuote("Q-1", "PAY-1"))
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("CONVERTED");
     }
@@ -88,13 +96,13 @@ class PolicyServiceTest {
     void failsForUnknownQuote() {
         when(quoteRepository.findByQuoteNumber("Q-404")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> policyService.issueFromQuote("Q-404")).isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> policyService.issueFromQuote("Q-404", "PAY-1")).isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void cancelsActivePolicyOnlyOnce() {
         Policy policy = new Policy("P-1", 1L, ProductType.KASKO, "34ABC123", new BigDecimal("25000.00"),
-                TODAY, TODAY.plusYears(1), LocalDateTime.now(CLOCK));
+                TODAY, TODAY.plusYears(1), "PAY-1", LocalDateTime.now(CLOCK));
         when(policyRepository.findByPolicyNumber("P-1")).thenReturn(Optional.of(policy));
 
         assertThat(policyService.cancel("P-1").status()).isEqualTo(PolicyStatus.CANCELLED);

@@ -12,10 +12,12 @@ public record QuoteResponse(
         BigDecimal premium,
         String currency,
         QuoteStatus status,
-        LocalDate validUntil) {
+        LocalDate validUntil,
+        VehicleVerification vehicleVerification) {
 
     static QuoteResponse from(Quote quote) {
         return new QuoteResponse(quote.getQuoteNumber(), quote.getProductType(), quote.getPlateNumber(),
-                quote.getPremium(), "TRY", quote.getStatus(), quote.getValidUntil());
+                quote.getPremium().setScale(2), "TRY", quote.getStatus(), quote.getValidUntil(),
+                quote.getVehicleVerification());
     }
 }

@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/v1/vehicles/06AB1234"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "plateNumber": "06AB1234",
+      "chassisNumber": "VF1RFB00X67123456",
+      "brand": "RENAULT",
+      "model": "CLIO 1.0 TCE",
+      "modelYear": 2021,
+      "status": "ACTIVE"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

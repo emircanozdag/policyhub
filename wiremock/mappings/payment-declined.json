@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/payments",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.paymentToken == 'tok_insufficient_funds')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "paymentId": "PAY-DECLINED",
+      "status": "DECLINED",
+      "declineReason": "insufficient funds"
+    }
+  }
+}

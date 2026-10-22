@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/payments",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.paymentToken == 'tok_gateway_down')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 503
+  }
+}

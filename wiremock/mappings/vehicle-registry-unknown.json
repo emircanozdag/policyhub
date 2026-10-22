@@ -1,0 +1,10 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/v1/vehicles/.*"
+  },
+  "response": {
+    "status": 404
+  }
+}

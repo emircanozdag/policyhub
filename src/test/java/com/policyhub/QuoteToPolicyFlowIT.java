@@ -31,11 +31,12 @@ class QuoteToPolicyFlowIT extends AbstractOracleIT {
                 .andReturn().getResponse().getContentAsString();
         String quoteNumber = JsonPath.read(quoteJson, "$.quoteNumber");
 
-        String issueBody = "{\"quoteNumber\":\"%s\"}".formatted(quoteNumber);
+        String issueBody = "{\"quoteNumber\":\"%s\",\"paymentToken\":\"tok_visa\"}".formatted(quoteNumber);
         String policyJson = mockMvc.perform(post("/api/v1/policies")
                         .contentType(MediaType.APPLICATION_JSON).content(issueBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.paymentReference").value(DEFAULT_PAYMENT_ID))
                 .andReturn().getResponse().getContentAsString();
         String policyNumber = JsonPath.read(policyJson, "$.policyNumber");
 

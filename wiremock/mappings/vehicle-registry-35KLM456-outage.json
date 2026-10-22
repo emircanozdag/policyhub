@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/v1/vehicles/35KLM456"
+  },
+  "response": {
+    "status": 503
+  },
+  "metadata": {
+    "description": "Simulates a registry outage for this plate: the app falls back to the nightly imported copy"
+  }
+}
