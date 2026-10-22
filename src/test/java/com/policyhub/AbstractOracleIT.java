@@ -32,8 +32,8 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
  */
 @SpringBootTest(properties = {
         "policyhub.batch.lifecycle.schedule-enabled=false",
-        "policyhub.integration.vehicle-registry.read-timeout=500ms",
-        "policyhub.integration.payment-gateway.read-timeout=500ms",
+        "policyhub.integration.vehicle-registry.read-timeout=1s",
+        "policyhub.integration.payment-gateway.read-timeout=1s",
         "resilience4j.retry.configs.default.wait-duration=10ms",
         "resilience4j.retry.instances.payment-gateway.wait-duration=10ms"
 })

@@ -75,7 +75,7 @@ class ThirdPartyResilienceIT extends AbstractOracleIT {
     @Test
     void slowRegistryIsCutOffByTimeoutAndFallsBack() throws Exception {
         THIRD_PARTIES.stubFor(WireMock.get("/v1/vehicles/34RES004")
-                .willReturn(okJson(registryVehicle("34RES004", 2023, "ACTIVE")).withFixedDelay(1_500)));
+                .willReturn(okJson(registryVehicle("34RES004", 2023, "ACTIVE")).withFixedDelay(2_500)));
 
         createQuote("34RES004", 2023)
                 .andExpect(status().isCreated())

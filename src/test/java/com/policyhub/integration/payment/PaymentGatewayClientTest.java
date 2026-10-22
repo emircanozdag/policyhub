@@ -38,11 +38,19 @@ class PaymentGatewayClientTest {
 
     private PaymentGatewayClient client;
 
+    /** Generous timeout so a cold JVM on a slow CI runner never looks like a slow partner. */
+    private static final Duration NORMAL_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration SHORT_TIMEOUT = Duration.ofMillis(200);
+
     @BeforeEach
     void setUp() {
+        client = client(NORMAL_TIMEOUT);
+    }
+
+    private static PaymentGatewayClient client(Duration readTimeout) {
         var endpoint = new IntegrationProperties.Endpoint(URI.create(gateway.baseUrl()), "pos-key",
-                Duration.ofMillis(500), Duration.ofMillis(300));
-        client = new PaymentGatewayClient(IntegrationConfig.restClient(RestClient.builder(), endpoint));
+                Duration.ofSeconds(2), readTimeout);
+        return new PaymentGatewayClient(IntegrationConfig.restClient(RestClient.builder(), endpoint));
     }
 
     @Test
@@ -72,7 +80,7 @@ class PaymentGatewayClientTest {
         assertThatThrownBy(() -> client.charge(REQUEST)).isInstanceOf(ThirdPartyUnavailableException.class);
 
         gateway.stubFor(post("/v1/payments").willReturn(okJson("{}").withFixedDelay(1_000)));
-        assertThatThrownBy(() -> client.charge(REQUEST)).isInstanceOf(ThirdPartyUnavailableException.class);
+        assertThatThrownBy(() -> client(SHORT_TIMEOUT).charge(REQUEST)).isInstanceOf(ThirdPartyUnavailableException.class);
     }
 
     @Test

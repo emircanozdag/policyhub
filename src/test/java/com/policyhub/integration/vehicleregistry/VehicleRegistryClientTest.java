@@ -34,11 +34,19 @@ class VehicleRegistryClientTest {
 
     private VehicleRegistryClient client;
 
+    /** Generous timeout so a cold JVM on a slow CI runner never looks like a slow partner. */
+    private static final Duration NORMAL_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration SHORT_TIMEOUT = Duration.ofMillis(200);
+
     @BeforeEach
     void setUp() {
+        client = client(NORMAL_TIMEOUT);
+    }
+
+    private static VehicleRegistryClient client(Duration readTimeout) {
         var endpoint = new IntegrationProperties.Endpoint(URI.create(registry.baseUrl()), "registry-key",
-                Duration.ofMillis(500), Duration.ofMillis(300));
-        client = new VehicleRegistryClient(IntegrationConfig.restClient(RestClient.builder(), endpoint), null);
+                Duration.ofSeconds(2), readTimeout);
+        return new VehicleRegistryClient(IntegrationConfig.restClient(RestClient.builder(), endpoint), null);
     }
 
     @Test
@@ -71,7 +79,7 @@ class VehicleRegistryClientTest {
     void slowResponseIsTransient() {
         registry.stubFor(get("/v1/vehicles/34ABC123").willReturn(okJson("{}").withFixedDelay(1_000)));
 
-        assertThatThrownBy(() -> client.lookup("34ABC123")).isInstanceOf(ThirdPartyUnavailableException.class);
+        assertThatThrownBy(() -> client(SHORT_TIMEOUT).lookup("34ABC123")).isInstanceOf(ThirdPartyUnavailableException.class);
     }
 
     @Test
